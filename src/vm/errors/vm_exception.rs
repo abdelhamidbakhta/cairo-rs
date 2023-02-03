@@ -237,19 +237,10 @@ impl Location {
     pub fn to_string(&self, message: &String) -> String {
         let msg_prefix = if message.is_empty() { "" } else { ": " };
 
-        #[cfg(feature = "std")]
-        let x = format!(
+        format!(
             "{}:{}:{}{}{}",
             self.input_file.filename, self.start_line, self.start_col, msg_prefix, message
-        );
-
-        #[cfg(not(feature = "std"))]
-        let x = format!(
-            "{}:{}{}{}",
-            self.start_line, self.start_col, msg_prefix, message
-        );
-
-        x
+        )
     }
 
     pub fn to_string_with_content(&self, message: &String) -> String {
@@ -304,12 +295,12 @@ impl Location {
 #[cfg(test)]
 mod test {
     use crate::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
-    #[cfg(feature = "std")]
     use crate::serde::deserialize_program::InputFile;
     use crate::serde::deserialize_program::{Attribute, HintLocation, InstructionLocation};
     use crate::types::program::Program;
     use crate::types::relocatable::Relocatable;
     use crate::utils::{load_program, test_utils::*};
+
     #[cfg(not(feature = "std"))]
     use hashbrown::HashMap;
     #[cfg(feature = "std")]
@@ -322,7 +313,6 @@ mod test {
         let location = Location {
             end_line: 2,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("Folder/file.cairo"),
             },
@@ -355,7 +345,6 @@ mod test {
         let location = Location {
             end_line: 2,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("Folder/file.cairo"),
             },
@@ -375,7 +364,6 @@ mod test {
         let location = Location {
             end_line: 2,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("Folder/file.cairo"),
             },
@@ -385,21 +373,10 @@ mod test {
         };
         let message = String::from("While expanding the reference");
 
-        #[cfg(feature = "std")]
-        {
-            assert_eq!(
-                location.to_string(&message),
-                String::from("Folder/file.cairo:1:1: While expanding the reference")
-            );
-        }
-
-        #[cfg(not(feature = "std"))]
-        {
-            assert_eq!(
-                location.to_string(&message),
-                String::from("1:1: While expanding the reference")
-            )
-        }
+        assert_eq!(
+            location.to_string(&message),
+            String::from("Folder/file.cairo:1:1: While expanding the reference")
+        );
     }
 
     #[test]
@@ -455,7 +432,6 @@ mod test {
         let location = Location {
             end_line: 2,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("Folder/file.cairo"),
             },
@@ -490,7 +466,6 @@ mod test {
         let location = Location {
             end_line: 2,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("Folder/file.cairo"),
             },
@@ -498,7 +473,6 @@ mod test {
                 Box::new(Location {
                     end_line: 3,
                     end_col: 3,
-                    #[cfg(feature = "std")]
                     input_file: InputFile {
                         filename: String::from("Folder/file_b.cairo"),
                     },
@@ -568,7 +542,6 @@ mod test {
         let location = Location {
             end_line: 2,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("Folder/file.cairo"),
             },
@@ -591,7 +564,6 @@ mod test {
         let location = Location {
             end_line: 2,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("Folder/file.cairo"),
             },
@@ -614,7 +586,6 @@ mod test {
         let location_a = Location {
             end_line: 2,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("Folder/file_a.cairo"),
             },
@@ -625,7 +596,6 @@ mod test {
         let location_b = Location {
             end_line: 3,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("Folder/file_b.cairo"),
             },
@@ -697,7 +667,6 @@ mod test {
         let location = Location {
             end_line: 2,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("Folder/file.cairo"),
             },
@@ -706,20 +675,10 @@ mod test {
             start_col: 1,
         };
         let message = String::from("While expanding the reference");
-        #[cfg(feature = "std")]
-        {
-            assert_eq!(
-                location.to_string_with_content(&message),
-                String::from("Folder/file.cairo:1:1: While expanding the reference")
-            )
-        }
-        #[cfg(not(feature = "std"))]
-        {
-            assert_eq!(
-                location.to_string_with_content(&message),
-                String::from("1:1: While expanding the reference")
-            )
-        }
+        assert_eq!(
+            location.to_string_with_content(&message),
+            String::from("Folder/file.cairo:1:1: While expanding the reference")
+        )
     }
 
     #[test]
@@ -727,7 +686,6 @@ mod test {
         let location = Location {
             end_line: 5,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("cairo_programs/bad_programs/bad_usort.cairo"),
             },
@@ -736,10 +694,20 @@ mod test {
             start_col: 1,
         };
         let message = String::from("Error at pc=0:75:");
-        assert_eq!(
+        #[cfg(feature = "std")]
+        {
+            assert_eq!(
             location.to_string_with_content(&message),
             String::from("cairo_programs/bad_programs/bad_usort.cairo:5:1: Error at pc=0:75:\nfunc usort{range_check_ptr}(input_len: felt, input: felt*) -> (\n^")
         )
+        }
+        #[cfg(not(feature = "std"))]
+        {
+            assert_eq!(
+                location.to_string_with_content(&message),
+                String::from("cairo_programs/bad_programs/bad_usort.cairo:5:1: Error at pc=0:75:")
+            )
+        }
     }
 
     #[test]
@@ -747,7 +715,6 @@ mod test {
         let location = Location {
             end_line: 5,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("cairo_programs/bad_prtypoograms/bad_usort.cairo"),
             },
@@ -769,7 +736,6 @@ mod test {
         let location = Location {
             end_line: 5,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("cairo_programs/bad_programs/bad_usort.cairo"),
             },
@@ -801,7 +767,6 @@ mod test {
         let location = Location {
             end_line: 5,
             end_col: 2,
-            #[cfg(feature = "std")]
             input_file: InputFile {
                 filename: String::from("cairo_programs/bad_programs/bad_usort.cairo"),
             },
@@ -820,6 +785,7 @@ mod test {
 
     #[test]
     fn run_bad_range_check_and_check_error_displayed() {
+        #[cfg(feature = "std")]
         let expected_error_string = r#"Error message: Failed range-check
 cairo_programs/bad_programs/bad_range_check.cairo:5:9: Error at pc=0:0:
 An ASSERT_EQ instruction failed: 4 != 5.
@@ -838,6 +804,16 @@ cairo_programs/bad_programs/bad_range_check.cairo:19:33: (pc=0:17)
 cairo_programs/bad_programs/bad_range_check.cairo:11:5: (pc=0:6)
     check_range(num - 1);
     ^******************^
+"#;
+        #[cfg(not(feature = "std"))]
+        let expected_error_string = r#"Error message: Failed range-check
+cairo_programs/bad_programs/bad_range_check.cairo:5:9: Error at pc=0:0:
+An ASSERT_EQ instruction failed: 4 != 5.
+Cairo traceback (most recent call last):
+cairo_programs/bad_programs/bad_range_check.cairo:23:5: (pc=0:29)
+cairo_programs/bad_programs/bad_range_check.cairo:19:12: (pc=0:21)
+cairo_programs/bad_programs/bad_range_check.cairo:19:33: (pc=0:17)
+cairo_programs/bad_programs/bad_range_check.cairo:11:5: (pc=0:6)
 "#;
         let program = load_program(
             #[cfg(feature = "std")]
@@ -862,6 +838,7 @@ cairo_programs/bad_programs/bad_range_check.cairo:11:5: (pc=0:6)
 
     #[test]
     fn run_bad_usort_and_check_error_displayed() {
+        #[cfg(feature = "std")]
         let expected_error_string = r#"cairo_programs/bad_programs/bad_usort.cairo:79:5: Error at pc=0:75:
 Got an exception while executing a hint: unexpected verify multiplicity fail: positions length != 0
     %{ assert len(positions) == 0 %}
@@ -876,6 +853,14 @@ cairo_programs/bad_programs/bad_usort.cairo:36:5: (pc=0:30)
 cairo_programs/bad_programs/bad_usort.cairo:64:5: (pc=0:60)
     verify_multiplicity(multiplicity=multiplicity, input_len=input_len, input=input, value=value);
     ^*******************************************************************************************^
+"#;
+        #[cfg(not(feature = "std"))]
+        let expected_error_string = r#"cairo_programs/bad_programs/bad_usort.cairo:79:5: Error at pc=0:75:
+Got an exception while executing a hint: unexpected verify multiplicity fail: positions length != 0
+Cairo traceback (most recent call last):
+cairo_programs/bad_programs/bad_usort.cairo:91:48: (pc=0:97)
+cairo_programs/bad_programs/bad_usort.cairo:36:5: (pc=0:30)
+cairo_programs/bad_programs/bad_usort.cairo:64:5: (pc=0:60)
 "#;
         let program = load_program(
             #[cfg(feature = "std")]

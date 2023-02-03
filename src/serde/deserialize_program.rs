@@ -103,11 +103,10 @@ pub struct Attribute {
 pub struct Location {
     pub end_line: u32,
     pub end_col: u32,
+    pub input_file: InputFile,
     pub parent_location: Option<(Box<Location>, String)>,
     pub start_line: u32,
     pub start_col: u32,
-    #[cfg(feature = "std")]
-    pub input_file: InputFile,
 }
 
 #[derive(Deserialize, Debug, PartialEq, Eq)]
@@ -121,7 +120,6 @@ pub struct InstructionLocation {
     pub hints: Vec<HintLocation>,
 }
 
-#[cfg(feature = "std")]
 #[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
 pub struct InputFile {
     pub filename: String,
@@ -1189,7 +1187,6 @@ mod tests {
                         inst: Location {
                             end_line: 7,
                             end_col: 73,
-                            #[cfg(feature = "std")]
                             input_file: InputFile { filename: String::from("/Users/user/test/env/lib/python3.9/site-packages/starkware/cairo/lang/compiler/lib/registers.cairo") },
                             parent_location: None,
                             start_line: 7,
@@ -1204,7 +1201,6 @@ mod tests {
                         inst: Location {
                             end_line: 5,
                             end_col: 40,
-                            #[cfg(feature = "std")]
                             input_file: InputFile { filename: String::from("/Users/user/test/env/lib/python3.9/site-packages/starkware/cairo/common/alloc.cairo") },
                             parent_location: None,
                             start_line: 5,
@@ -1291,18 +1287,15 @@ mod tests {
             [
                 (4, InstructionLocation {
                     inst: Location { end_line: 9, end_col: 36,
-                        #[cfg(feature = "std")]
                         input_file: InputFile { filename: String::from("test/contracts/cairo/always_fail.cairo") }, parent_location: Some(
                         (Box::new(Location {
                             end_line: 9,
                             end_col: 36,
-                            #[cfg(feature = "std")]
                             input_file: InputFile { filename: String::from("test/contracts/cairo/always_fail.cairo") },
                             parent_location: Some(
                                 (   Box::new(Location {
                                     end_line: 11,
                                     end_col: 15,
-                                    #[cfg(feature = "std")]
                                     input_file: InputFile { filename: String::from("test/contracts/cairo/always_fail.cairo") },
                                     parent_location: None,
                                     start_line: 11,
