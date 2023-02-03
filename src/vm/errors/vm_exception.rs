@@ -740,6 +740,7 @@ mod test {
     }
 
     #[test]
+    #[cfg(feature = "std")]
     fn location_get_location_marks() {
         let location = Location {
             end_line: 5,
@@ -751,23 +752,13 @@ mod test {
             start_line: 5,
             start_col: 1,
         };
-        #[cfg(feature = "std")]
-        {
-            let input_file_path = Path::new(&location.input_file.filename);
-            let file = File::open(input_file_path).expect("Failed to open file");
-            let mut reader = BufReader::new(file);
-            assert_eq!(
-                location.get_location_marks(&mut reader),
-                String::from("func usort{range_check_ptr}(input_len: felt, input: felt*) -> (\n^")
-            )
-        }
-        #[cfg(not(feature = "std"))]
-        {
-            assert_eq!(
-                location.get_location_marks(),
-                String::from("func usort{range_check_ptr}(input_len: felt, input: felt*) -> (\n^")
-            )
-        }
+        let input_file_path = Path::new(&location.input_file.filename);
+        let file = File::open(input_file_path).expect("Failed to open file");
+        let mut reader = BufReader::new(file);
+        assert_eq!(
+            location.get_location_marks(&mut reader),
+            String::from("func usort{range_check_ptr}(input_len: felt, input: felt*) -> (\n^")
+        )
     }
 
     #[test]
