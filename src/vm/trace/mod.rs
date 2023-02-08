@@ -3,9 +3,9 @@ use super::{
     decoding::decoder::decode_instruction, errors::vm_errors::VirtualMachineError,
     vm_memory::memory::Memory,
 };
+use crate::borrow::Cow;
 use crate::types::relocatable::{MaybeRelocatable, Relocatable};
 use num_traits::ToPrimitive;
-use std::borrow::Cow;
 
 pub mod trace_entry;
 
@@ -55,9 +55,13 @@ mod test {
     use crate::{utils::test_utils::*, vm::errors::memory_errors::MemoryError};
     use assert_matches::assert_matches;
 
+    #[cfg(target_arch = "wasm32")]
+    use wasm_bindgen_test::*;
+
     /// Test that get_perm_range_check_limits() works as intended with an empty
     /// trace.
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn get_perm_range_check_limits_empty_trace() {
         let trace = &[];
         let memory = Memory::new();
@@ -68,6 +72,7 @@ mod test {
     /// Test that get_perm_range_check_limits() works as intended with a single
     /// trace element.
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn get_perm_range_check_limits_single_element() {
         let trace = &[TraceEntry {
             pc: (0, 0).into(),
@@ -85,6 +90,7 @@ mod test {
     /// Test that get_perm_range_check_limits() works as intended with multiple
     /// trace elements.
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn get_perm_range_check_limits_multiple_elements() {
         let trace = &[
             TraceEntry {

@@ -1,3 +1,4 @@
+use crate::{any::Any, collections::HashMap, prelude::*};
 use crate::{
     hint_processor::{
         builtin_hint_processor::hint_utils::{
@@ -11,7 +12,6 @@ use crate::{
 };
 use felt::Felt;
 use num_traits::Signed;
-use std::{any::Any, collections::HashMap};
 
 //  Implements hint:
 //  %{ vm_enter_scope({'n': ids.n}) %}
@@ -56,6 +56,7 @@ pub fn memset_continue_loop(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::string::ToString;
     use crate::vm::vm_memory::memory_segments::MemorySegmentManager;
     use crate::{
         any_box,
@@ -75,7 +76,11 @@ mod tests {
     use assert_matches::assert_matches;
     use num_traits::{One, Zero};
 
+    #[cfg(target_arch = "wasm32")]
+    use wasm_bindgen_test::*;
+
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn memset_enter_scope_valid() {
         let hint_code = "vm_enter_scope({'n': ids.n})";
         let mut vm = vm!();
@@ -88,6 +93,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn memset_enter_scope_invalid() {
         let hint_code = "vm_enter_scope({'n': ids.n})";
         let mut vm = vm!();
@@ -105,6 +111,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn memset_continue_loop_valid_continue_loop_equal_1() {
         let hint_code = "n -= 1\nids.continue_loop = 1 if n > 0 else 0";
         let mut vm = vm!();
@@ -122,6 +129,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn memset_continue_loop_valid_continue_loop_equal_5() {
         let hint_code = "n -= 1\nids.continue_loop = 1 if n > 0 else 0";
         let mut vm = vm!();
@@ -140,6 +148,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn memset_continue_loop_variable_not_in_scope_error() {
         let hint_code = "n -= 1\nids.continue_loop = 1 if n > 0 else 0";
         let mut vm = vm!();
@@ -161,6 +170,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn memset_continue_loop_insert_error() {
         let hint_code = "n -= 1\nids.continue_loop = 1 if n > 0 else 0";
         let mut vm = vm!();

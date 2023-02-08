@@ -1,4 +1,10 @@
 use crate::{
+    borrow::{Cow, ToOwned},
+    collections::HashMap,
+    ops::Add,
+    prelude::*,
+};
+use crate::{
     hint_processor::{
         builtin_hint_processor::hint_utils::{
             get_integer_from_var_name, get_ptr_from_var_name, insert_value_into_ap,
@@ -14,7 +20,6 @@ use crate::{
 };
 use felt::Felt;
 use num_traits::{ToPrimitive, Zero};
-use std::{borrow::Cow, collections::HashMap, ops::Add};
 
 // Constants in package "starkware.cairo.common.cairo_keccak.keccak".
 const BYTES_IN_WORD: &str = "starkware.cairo.common.cairo_keccak.keccak.BYTES_IN_WORD";
@@ -254,6 +259,7 @@ pub fn u64_array_to_mayberelocatable_vec(array: &[u64]) -> Vec<MaybeRelocatable>
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::string::ToString;
     use crate::vm::vm_memory::memory_segments::MemorySegmentManager;
     use crate::{
         any_box,
@@ -271,9 +277,12 @@ mod tests {
         },
     };
     use assert_matches::assert_matches;
-    use std::any::Any;
+
+    #[cfg(target_arch = "wasm32")]
+    use wasm_bindgen_test::*;
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn keccak_write_args_valid_test() {
         let hint_code = "segments.write_arg(ids.inputs, [ids.low % 2 ** 64, ids.low // 2 ** 64])\nsegments.write_arg(ids.inputs + 2, [ids.high % 2 ** 64, ids.high // 2 ** 64])";
         let mut vm = vm_with_range_check!();
@@ -291,6 +300,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn keccak_write_args_write_error() {
         let hint_code = "segments.write_arg(ids.inputs, [ids.low % 2 ** 64, ids.low // 2 ** 64])\nsegments.write_arg(ids.inputs + 2, [ids.high % 2 ** 64, ids.high // 2 ** 64])";
         let mut vm = vm_with_range_check!();
@@ -307,6 +317,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn compare_bytes_in_word_nondet_valid() {
         let hint_code =
             "memory[ap] = to_felt_or_relocatable(ids.n_bytes >= ids.KECCAK_FULL_RATE_IN_BYTES)";
@@ -333,6 +344,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn compare_keccak_full_rate_in_bytes_nondet_valid() {
         let hint_code =
             "memory[ap] = to_felt_or_relocatable(ids.n_bytes >= ids.KECCAK_FULL_RATE_IN_BYTES)";
@@ -361,6 +373,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn block_permutation_valid_test() {
         let hint_code =
             "memory[ap] = to_felt_or_relocatable(ids.n_bytes >= ids.KECCAK_FULL_RATE_IN_BYTES)";

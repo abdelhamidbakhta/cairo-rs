@@ -1,9 +1,9 @@
+use crate::ops::Shr;
 use crate::vm::errors::vm_errors::VirtualMachineError;
 use felt::Felt;
 use num_bigint::{BigInt, BigUint};
 use num_integer::Integer;
 use num_traits::{One, Signed, Zero};
-use std::ops::Shr;
 
 ///Returns the integer square root of the nonnegative integer n.
 ///This is the floor of the exact square root of n.
@@ -164,7 +164,11 @@ mod tests {
     use assert_matches::assert_matches;
     use num_traits::Num;
 
+    #[cfg(target_arch = "wasm32")]
+    use wasm_bindgen_test::*;
+
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_divmod_a() {
         let a = bigint_str!(
             "11260647941622813594563746375280766662237311019551239924981511729608487775604310196863705127454617186486639011517352066501847110680463498585797912894788"
@@ -185,6 +189,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_divmod_b() {
         let a = bigint_str!(
             "29642372811668969595956851264770043260610851505766181624574941701711520154703788233010819515917136995474951116158286220089597404329949295479559895970988"
@@ -205,6 +210,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_divmod_c() {
         let a = bigint_str!(
             "1208267356464811040667664150251401430616174694388968865551115897173431833224432165394286799069453655049199580362994484548890574931604445970825506916876"
@@ -225,6 +231,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn compute_safe_div() {
         let x = Felt::new(26);
         let y = Felt::new(13);
@@ -232,6 +239,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn compute_safe_div_non_divisor() {
         let x = Felt::new(25);
         let y = Felt::new(4);
@@ -244,6 +252,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn compute_safe_div_by_zero() {
         let x = Felt::new(25);
         let y = Felt::zero();
@@ -252,11 +261,13 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn compute_safe_div_usize() {
         assert_matches!(safe_div_usize(26, 13), Ok(2));
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn compute_safe_div_usize_non_divisor() {
         assert_matches!(
             safe_div_usize(25, 4),
@@ -265,6 +276,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn compute_safe_div_usize_by_zero() {
         assert_matches!(
             safe_div_usize(25, 0),
@@ -273,6 +285,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn compute_line_slope_for_valid_points() {
         let point_a = (
             bigint_str!(
@@ -302,6 +315,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn compute_double_slope_for_valid_point_a() {
         let point = (
             bigint_str!(
@@ -324,6 +338,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn compute_double_slope_for_valid_point_b() {
         let point = (
             bigint_str!(
@@ -346,6 +361,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_ec_double_for_valid_point_a() {
         let point = (
             bigint_str!(
@@ -373,6 +389,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_ec_double_for_valid_point_b() {
         let point = (
             bigint_str!(
@@ -400,6 +417,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_ec_double_for_valid_point_c() {
         let point = (
             bigint_str!(
@@ -427,6 +445,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_ec_add_for_valid_points_a() {
         let point_a = (
             bigint_str!(
@@ -461,6 +480,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_ec_add_for_valid_points_b() {
         let point_a = (
             bigint_str!(
@@ -495,6 +515,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_ec_add_for_valid_points_c() {
         let point_a = (
             bigint_str!(
@@ -529,18 +550,21 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_isqrt_a() {
         let n = biguint!(81);
         assert_matches!(isqrt(&n), Ok(x) if x == biguint!(9));
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_isqrt_b() {
         let n = biguint_str!("4573659632505831259480");
         assert_matches!(isqrt(&n.pow(2_u32)), Ok(num) if num == n);
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_isqrt_c() {
         let n = biguint_str!(
             "3618502788666131213697322783095070105623107215331596699973092056135872020481"
@@ -549,6 +573,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test)]
     fn calculate_isqrt_zero() {
         let n = BigUint::zero();
         assert_matches!(isqrt(&n), Ok(inner) if inner.is_zero());

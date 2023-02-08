@@ -121,6 +121,10 @@ cairo-rs_trace: $(CAIRO_RS_TRACE) $(CAIRO_RS_MEM)
 
 test: $(COMPILED_PROOF_TESTS) $(COMPILED_TESTS) $(COMPILED_BAD_TESTS) $(COMPILED_NORETROCOMPAT_TESTS)
 	cargo llvm-cov nextest --no-report --workspace --features test_utils
+test-no_std: $(COMPILED_PROOF_TESTS) $(COMPILED_TESTS) $(COMPILED_BAD_TESTS) $(COMPILED_NORETROCOMPAT_TESTS)
+	cargo llvm-cov nextest --no-report --workspace --features test_utils --no-default-features --features alloc
+test-wasm: $(COMPILED_PROOF_TESTS) $(COMPILED_TESTS) $(COMPILED_BAD_TESTS) $(COMPILED_NORETROCOMPAT_TESTS)
+	wasm-pack test --node --no-default-features --features alloc
 
 clippy:
 	cargo clippy --tests --examples --all-features -- -D warnings
@@ -148,22 +152,22 @@ compare_benchmarks: $(COMPILED_BENCHES)
 	cd bench && ./run_benchmarks.sh
 
 compare_trace_memory: $(CAIRO_RS_TRACE) $(CAIRO_TRACE) $(CAIRO_RS_MEM) $(CAIRO_MEM)
-	cd tests; ./compare_vm_state.sh trace memory
+	cd src/tests; ./compare_vm_state.sh trace memory
 
 compare_trace: $(CAIRO_RS_TRACE) $(CAIRO_TRACE)
-	cd tests; ./compare_vm_state.sh trace
+	cd src/tests; ./compare_vm_state.sh trace
 
 compare_memory: $(CAIRO_RS_MEM) $(CAIRO_MEM)
-	cd tests; ./compare_vm_state.sh memory
+	cd src/tests; ./compare_vm_state.sh memory
 
 compare_trace_memory_proof: $(COMPILED_PROOF_TESTS) $(CAIRO_RS_TRACE_PROOF) $(CAIRO_TRACE_PROOF) $(CAIRO_RS_MEM_PROOF) $(CAIRO_MEM_PROOF)
-	cd tests; ./compare_vm_state.sh trace memory proof_mode
+	cd src/tests; ./compare_vm_state.sh trace memory proof_mode
 
 compare_trace_proof: $(CAIRO_RS_TRACE_PROOF) $(CAIRO_TRACE_PROOF)
-	cd tests; ./compare_vm_state.sh trace proof_mode
+	cd src/tests; ./compare_vm_state.sh trace proof_mode
 
 compare_memory_proof: $(CAIRO_RS_MEM_PROOF) $(CAIRO_MEM_PROOF)
-	cd tests; ./compare_vm_state.sh memory proof_mode
+	cd src/tests; ./compare_vm_state.sh memory proof_mode
 
 # Run with nightly enable the `doc_cfg` feature wich let us provide clear explaination about which parts of the code are behind a feature flag
 docs:
